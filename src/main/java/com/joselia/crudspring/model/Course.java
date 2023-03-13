@@ -1,10 +1,17 @@
 package com.joselia.crudspring.model;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
+import org.hibernate.validator.constraints.Length;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -12,7 +19,8 @@ import lombok.Data;
 
 @Data
 @Entity
-// @Table(name="cursos")
+@SQLDelete(sql = "UPDATE Course SET status = 'Inativo' WHERE id = ?")
+@Where(clause = "status = 'Ativo'")
 public class Course {
     
     @Id
@@ -20,10 +28,21 @@ public class Course {
     @JsonProperty("_id")
     private Long id;
 
-    @Column(length = 200, nullable = false)
+    @NotBlank
+    @NotNull
+    @Length(min=5, max=100)
+    @Column(length = 100, nullable = false)
     private String name;
 
+    @NotNull
+    @Length(max=12)
+    @Pattern(regexp = "Back-end|Front-end")
     @Column(length = 12, nullable = false)
     private String category;
+
+    @NotNull
+    @Pattern(regexp = "Ativo|Inativo")
+    @Column(length = 12, nullable = false)
+    private String status = "Ativo";
 
 }
